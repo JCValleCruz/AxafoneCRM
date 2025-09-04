@@ -3,11 +3,5 @@
     "api/**/*.js": {
       "runtime": "@vercel/node"
     }
-  },
-  "rewrites": [
-    {
-      "source": "/commercial/(.*)",
-      "destination": "/api/$1"
-    }
-  ]
+  }
 }
