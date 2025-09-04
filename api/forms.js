@@ -176,6 +176,84 @@ module.exports = async (req, res) => {
 
       const [rows] = await pool.execute(query, params);
       res.json(rows);
+    } else if (req.method === 'PUT') {
+      // Actualizar formulario existente
+      const formId = pathParts[0]; // ID del formulario en la URL
+      if (!formId) {
+        res.status(400).json({ error: 'Form ID required for update' });
+        return;
+      }
+
+      const {
+        latitude, longitude, locationAddress,
+        cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
+        telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
+        numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
+        ciberseguridad, registrosHorario, proveedorCorreo, licenciasOffice,
+        mantenimientoInformatico, numeroEmpleados
+      } = req.body;
+
+      // Procesar datos igual que en POST
+      const processedData = {
+        latitude,
+        longitude,
+        locationAddress,
+        cliente,
+        cif,
+        direccion,
+        personaContacto,
+        cargoContacto,
+        contactoEsDecisor: contactoEsDecisor ? 'SI' : 'NO',
+        telefonoContacto,
+        emailContacto,
+        finPermanencia: finPermanencia || null,
+        sedesActuales: sedesActuales || null,
+        operadorActual: operadorActual || null,
+        numLineasMoviles: numLineasMoviles ? parseInt(numLineasMoviles) : null,
+        centralita: centralita ? (centralita === 'true' || centralita === 'SI' ? 'SI' : 'NO') : null,
+        soloVoz: soloVoz || null,
+        extensiones: extensiones ? parseInt(extensiones) : null,
+        m2m: m2m || null,
+        fibrasActuales: fibrasActuales || null,
+        ciberseguridad: ciberseguridad || null,
+        registrosHorario: registrosHorario ? (registrosHorario === 'true' || registrosHorario === 'SI' ? 'SI' : 'NO') : null,
+        proveedorCorreo: proveedorCorreo || null,
+        licenciasOffice: licenciasOffice || null,
+        mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null,
+        numeroEmpleados
+      };
+
+      const [result] = await pool.execute(
+        `UPDATE form_submissions SET 
+          latitude = ?, longitude = ?, location_address = ?, cliente = ?, cif = ?, 
+          direccion = ?, persona_contacto = ?, cargo_contacto = ?, contacto_es_decisor = ?,
+          telefono_contacto = ?, email_contacto = ?, fin_permanencia = ?, sedes_actuales = ?, 
+          operador_actual = ?, num_lineas_moviles = ?, centralita = ?, solo_voz = ?, 
+          extensiones = ?, m2m = ?, fibras_actuales = ?, ciberseguridad = ?, 
+          registros_horario = ?, proveedor_correo = ?, licencias_office = ?, 
+          mantenimiento_informatico = ?, numero_empleados = ?, updated_at = NOW() 
+         WHERE id = ?`,
+        [
+          processedData.latitude, processedData.longitude, processedData.locationAddress,
+          processedData.cliente, processedData.cif, processedData.direccion,
+          processedData.personaContacto, processedData.cargoContacto, processedData.contactoEsDecisor,
+          processedData.telefonoContacto, processedData.emailContacto, processedData.finPermanencia,
+          processedData.sedesActuales, processedData.operadorActual, processedData.numLineasMoviles,
+          processedData.centralita, processedData.soloVoz, processedData.extensiones,
+          processedData.m2m, processedData.fibrasActuales, processedData.ciberseguridad,
+          processedData.registrosHorario, processedData.proveedorCorreo, processedData.licenciasOffice,
+          processedData.mantenimientoInformatico, processedData.numeroEmpleados, formId
+        ]
+      );
+
+      if (result.affectedRows > 0) {
+        res.json({
+          success: true,
+          message: 'Form updated successfully'
+        });
+      } else {
+        res.status(404).json({ error: 'Form not found' });
+      }
     } else {
       res.status(405).json({ error: 'Method not allowed' });
     }
