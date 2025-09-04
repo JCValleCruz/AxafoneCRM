@@ -1,13 +1,13 @@
 {
   "functions": {
-    "commercial/**/*.js": {
+    "api/**/*.js": {
       "runtime": "@vercel/node@3.0.7"
     }
   },
   "rewrites": [
     {
       "source": "/commercial/(.*)",
-      "destination": "/commercial/$1"
+      "destination": "/api/$1"
     }
   ]
 }
