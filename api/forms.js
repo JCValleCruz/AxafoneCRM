@@ -26,6 +26,38 @@ module.exports = async (req, res) => {
         mantenimientoInformatico, numeroEmpleados
       } = req.body;
 
+      // Convertir valores vacíos a NULL o valores apropiados para la BD
+      const processedData = {
+        userId,
+        jefeEquipoId,
+        latitude,
+        longitude,
+        locationAddress,
+        cliente,
+        cif,
+        direccion,
+        personaContacto,
+        cargoContacto,
+        contactoEsDecisor: contactoEsDecisor ? 'SI' : 'NO', // boolean -> ENUM
+        telefonoContacto,
+        emailContacto,
+        finPermanencia: finPermanencia || null, // string vacío -> NULL para date
+        sedesActuales: sedesActuales || null,
+        operadorActual: operadorActual || null,
+        numLineasMoviles: numLineasMoviles ? parseInt(numLineasMoviles) : null, // string -> INT
+        centralita: centralita ? (centralita === 'true' || centralita === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
+        soloVoz: soloVoz || null,
+        extensiones: extensiones ? parseInt(extensiones) : null, // string -> INT
+        m2m: m2m || null,
+        fibrasActuales: fibrasActuales || null,
+        ciberseguridad: ciberseguridad || null,
+        registrosHorario: registrosHorario ? (registrosHorario === 'true' || registrosHorario === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
+        proveedorCorreo: proveedorCorreo || null,
+        licenciasOffice: licenciasOffice || null,
+        mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
+        numeroEmpleados
+      };
+
       const [result] = await pool.execute(
         `INSERT INTO form_submissions (
           user_id, jefe_equipo_id, submission_date, latitude, longitude, location_address,
@@ -36,12 +68,16 @@ module.exports = async (req, res) => {
           mantenimiento_informatico, numero_empleados, created_at, updated_at
         ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [
-          userId, jefeEquipoId, latitude, longitude, locationAddress,
-          cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
-          telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
-          numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
-          ciberseguridad, registrosHorario, proveedorCorreo, licenciasOffice,
-          mantenimientoInformatico, numeroEmpleados
+          processedData.userId, processedData.jefeEquipoId, 
+          processedData.latitude, processedData.longitude, processedData.locationAddress,
+          processedData.cliente, processedData.cif, processedData.direccion, 
+          processedData.personaContacto, processedData.cargoContacto, processedData.contactoEsDecisor,
+          processedData.telefonoContacto, processedData.emailContacto, processedData.finPermanencia, 
+          processedData.sedesActuales, processedData.operadorActual,
+          processedData.numLineasMoviles, processedData.centralita, processedData.soloVoz, 
+          processedData.extensiones, processedData.m2m, processedData.fibrasActuales,
+          processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorCorreo, 
+          processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados
         ]
       );
 
