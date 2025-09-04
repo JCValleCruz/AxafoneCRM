@@ -88,12 +88,18 @@ module.exports = async (req, res) => {
       });
 
     } else if (req.method === 'GET') {
-      if (pathParts.length === 3 && pathParts[1] === 'cif') {
-        const cif = pathParts[2];
+      const { cif, userId, requesterId } = parsedUrl.query;
+      
+      // Búsqueda por CIF
+      if (cif) {
         const [rows] = await pool.execute(
-          `SELECT * FROM form_submissions 
-           WHERE cif = ? 
-           ORDER BY submission_date DESC 
+          `SELECT s.*, u.name as comercial_name, u.email as comercial_email, 
+                  boss.name as jefe_equipo_name
+           FROM form_submissions s
+           JOIN users u ON s.user_id = u.id
+           LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
+           WHERE s.cif = ? 
+           ORDER BY s.submission_date DESC 
            LIMIT 1`,
           [cif]
         );
@@ -103,34 +109,73 @@ module.exports = async (req, res) => {
         } else {
           res.status(404).json({ error: 'No client found with this CIF' });
         }
-
-      } else if (pathParts.length === 3 && pathParts[1] === 'user') {
-        const userId = pathParts[2];
-        const [rows] = await pool.execute(
-          `SELECT s.*, u.name as comercial_name, u.email as comercial_email, 
-                  boss.name as jefe_equipo_name
-           FROM form_submissions s
-           JOIN users u ON s.user_id = u.id
-           LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
-           WHERE s.user_id = ?
-           ORDER BY s.submission_date DESC`,
-          [userId]
-        );
-
-        res.json(rows);
-
-      } else {
-        const [rows] = await pool.execute(
-          `SELECT s.*, u.name as comercial_name, u.email as comercial_email, 
-                  boss.name as jefe_equipo_name
-           FROM form_submissions s
-           JOIN users u ON s.user_id = u.id
-           LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
-           ORDER BY s.submission_date DESC`
-        );
-
-        res.json(rows);
+        return;
       }
+
+      // Si no hay requesterId, devolver error de autenticación
+      if (!requesterId) {
+        res.status(401).json({ error: 'User authentication required' });
+        return;
+      }
+
+      // Obtener información del usuario que hace la petición
+      const [requesterRows] = await pool.execute(
+        'SELECT id, role, boss_id FROM users WHERE id = ?',
+        [requesterId]
+      );
+
+      if (requesterRows.length === 0) {
+        res.status(401).json({ error: 'Invalid user' });
+        return;
+      }
+
+      const requester = requesterRows[0];
+      let query, params;
+
+      // Lógica de jerarquía de permisos
+      switch (requester.role) {
+        case 'ADMINISTRADOR':
+          // Administradores ven todo
+          query = `SELECT s.*, u.name as comercial_name, u.email as comercial_email, 
+                          boss.name as jefe_equipo_name, u.role as comercial_role
+                   FROM form_submissions s
+                   JOIN users u ON s.user_id = u.id
+                   LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
+                   ORDER BY s.submission_date DESC`;
+          params = [];
+          break;
+
+        case 'JEFE_EQUIPO':
+          // Jefes de equipo ven los de sus comerciales
+          query = `SELECT s.*, u.name as comercial_name, u.email as comercial_email, 
+                          boss.name as jefe_equipo_name, u.role as comercial_role
+                   FROM form_submissions s
+                   JOIN users u ON s.user_id = u.id
+                   LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
+                   WHERE s.jefe_equipo_id = ?
+                   ORDER BY s.submission_date DESC`;
+          params = [requester.id];
+          break;
+
+        case 'COMERCIAL':
+          // Comerciales solo ven sus propios informes
+          query = `SELECT s.*, u.name as comercial_name, u.email as comercial_email, 
+                          boss.name as jefe_equipo_name, u.role as comercial_role
+                   FROM form_submissions s
+                   JOIN users u ON s.user_id = u.id
+                   LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
+                   WHERE s.user_id = ?
+                   ORDER BY s.submission_date DESC`;
+          params = [requester.id];
+          break;
+
+        default:
+          res.status(403).json({ error: 'Invalid user role' });
+          return;
+      }
+
+      const [rows] = await pool.execute(query, params);
+      res.json(rows);
     } else {
       res.status(405).json({ error: 'Method not allowed' });
     }
