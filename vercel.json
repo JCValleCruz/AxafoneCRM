@@ -6,6 +6,9 @@
     },
     "api/reports.js": {
       "maxDuration": 30
+    },
+    "api/team.js": {
+      "maxDuration": 30
     }
   }
 }
