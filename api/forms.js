@@ -104,6 +104,27 @@ module.exports = async (req, res) => {
     } else if (req.method === 'GET') {
       const { cif, search, userId, requesterId } = parsedUrl.query;
 
+      // Búsqueda por ID específico (GET /api/forms/{id})
+      if (pathParts.length === 3 && pathParts[0] === 'api' && pathParts[1] === 'forms' && pathParts[2]) {
+        const formId = pathParts[2];
+        const [rows] = await pool.execute(
+          `SELECT s.*, u.name as comercial_name, u.email as comercial_email,
+                  boss.name as jefe_equipo_name
+           FROM form_submissions s
+           JOIN users u ON s.user_id = u.id
+           LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
+           WHERE s.id = ?`,
+          [formId]
+        );
+
+        if (rows.length > 0) {
+          res.json(rows[0]);
+        } else {
+          res.status(404).json({ error: 'Form not found' });
+        }
+        return;
+      }
+
       // Búsqueda por coincidencias parciales en CIF o nombre de cliente (sin autenticación)
       if (search) {
         const searchPattern = `%${search}%`;
