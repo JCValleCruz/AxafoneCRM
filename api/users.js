@@ -42,6 +42,27 @@ module.exports = async (req, res) => {
         res.status(404).json({ error: 'User not found' });
       }
 
+    } else if (req.method === 'GET' && pathParts.length === 3 && pathParts[2] === 'team') {
+      const bossId = pathParts[1];
+
+      const [rows] = await pool.execute(
+        `SELECT id, email, name, role, tipo
+         FROM users
+         WHERE boss_id = ? AND is_active = 1
+         ORDER BY name`,
+        [bossId]
+      );
+
+      const teamMembers = rows.map(user => ({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        tipo: user.tipo
+      }));
+
+      res.json(teamMembers);
+
     } else if (req.method === 'POST') {
       const { email, password, name, role, tipo, boss_id } = req.body;
 
