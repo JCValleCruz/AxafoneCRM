@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "API backend for AxafoneCRM - Commercial Form Android app",
   "dependencies": {
-    "mysql2": "^3.6.5"
+    "mysql2": "^3.6.5",
+    "bcrypt": "^5.1.1"
   }
 }

@@ -1,4 +1,5 @@
 const pool = require('./db');
+const bcrypt = require('bcrypt');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -24,27 +25,33 @@ module.exports = async (req, res) => {
     }
 
     const [rows] = await pool.execute(
-      `SELECT id, email, name, role, boss_id, is_active, created_at, updated_at 
+      `SELECT id, email, name, role, boss_id, is_active, created_at, updated_at, password as hashedPassword
        FROM users 
-       WHERE email = ? AND password = ? AND is_active = true`,
-      [email, password]
+       WHERE email = ? AND is_active = true`,
+      [email]
     );
 
     if (rows.length > 0) {
       const user = rows[0];
-      res.json({
-        success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
-          bossId: user.boss_id,
-          isActive: user.is_active,
-          createdAt: user.created_at,
-          updatedAt: user.updated_at
-        }
-      });
+      const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
+
+      if (passwordMatch) {
+        res.json({
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+            bossId: user.boss_id,
+            isActive: user.is_active,
+            createdAt: user.created_at,
+            updatedAt: user.updated_at
+          }
+        });
+      } else {
+        res.status(401).json({ success: false, error: 'Invalid credentials' });
+      }
     } else {
       res.status(401).json({ success: false, error: 'Invalid credentials' });
     }
