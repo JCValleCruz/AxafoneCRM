@@ -17,8 +17,9 @@ module.exports = async (req, res) => {
   const pathParts = parsedUrl.pathname.split('/').filter(part => part);
 
   try {
-    if (req.method === 'GET' && pathParts.length === 2) {
-      const userId = pathParts[1];
+    // GET /api/users/{id}
+    if (req.method === 'GET' && pathParts.length === 3) {
+      const userId = pathParts[2];
 
       const [rows] = await pool.execute(
         `SELECT id, email, name, role, boss_id, is_active, created_at, updated_at
@@ -43,8 +44,9 @@ module.exports = async (req, res) => {
         res.status(404).json({ error: 'User not found' });
       }
 
-    } else if (req.method === 'GET' && pathParts.length === 3 && pathParts[2] === 'team') {
-      const bossId = pathParts[1];
+    // GET /api/users/{id}/team
+    } else if (req.method === 'GET' && pathParts.length === 4 && pathParts[3] === 'team') {
+      const bossId = pathParts[2];
 
       const [rows] = await pool.execute(
         `SELECT id, email, name, role, tipo
@@ -64,7 +66,8 @@ module.exports = async (req, res) => {
 
       res.json(teamMembers);
 
-    } else if (req.method === 'POST') {
+    // POST /api/users
+    } else if (req.method === 'POST' && pathParts.length === 2) {
       const { email, password, name, role, tipo, bossId } = req.body;
       
       console.log('Creating user with data:', { email, name, role, tipo, bossId });
@@ -84,8 +87,9 @@ module.exports = async (req, res) => {
         message: 'User created successfully'
       });
 
-    } else if (req.method === 'PUT' && pathParts.length === 3 && pathParts[2] === 'password') {
-      const userId = pathParts[1];
+    // PUT /api/users/{id}/password
+    } else if (req.method === 'PUT' && pathParts.length === 4 && pathParts[3] === 'password') {
+      const userId = pathParts[2];
       const { oldPassword, newPassword } = req.body;
 
       if (!oldPassword || !newPassword) {
@@ -119,7 +123,7 @@ module.exports = async (req, res) => {
       res.json({ success: true, message: 'Password updated successfully' });
 
     } else {
-      res.status(405).json({ error: 'Method not allowed' });
+      res.status(405).json({ error: 'Method not allowed for the requested URL' });
     }
 
   } catch (error) {
