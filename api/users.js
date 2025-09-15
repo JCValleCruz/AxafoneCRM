@@ -80,6 +80,43 @@ module.exports = async (req, res) => {
         message: 'User created successfully'
       });
 
+    } else if (req.method === 'PUT' && pathParts.length === 3 && pathParts[2] === 'change-password') {
+      const { userId, currentPassword, newPassword } = req.body;
+
+      console.log('Changing password for user:', userId);
+
+      // First verify current password
+      const [userRows] = await pool.execute(
+        `SELECT id, password FROM users WHERE id = ?`,
+        [userId]
+      );
+
+      if (userRows.length === 0) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      const user = userRows[0];
+      if (user.password !== currentPassword) {
+        res.status(400).json({ error: 'Current password is incorrect' });
+        return;
+      }
+
+      // Update password
+      const [updateResult] = await pool.execute(
+        `UPDATE users SET password = ?, updated_at = NOW() WHERE id = ?`,
+        [newPassword, userId]
+      );
+
+      if (updateResult.affectedRows > 0) {
+        res.json({
+          success: true,
+          message: 'Password changed successfully'
+        });
+      } else {
+        res.status(500).json({ error: 'Failed to update password' });
+      }
+
     } else {
       res.status(405).json({ error: 'Method not allowed' });
     }
