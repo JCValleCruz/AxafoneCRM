@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     }
 
     const [rows] = await pool.execute(
-      `SELECT id, email, name, role, boss_id, is_active, created_at, updated_at, password as hashedPassword
+      `SELECT id, email, name, role, tipo, boss_id, is_active, created_at, updated_at, password as hashedPassword
        FROM users 
        WHERE email = ? AND is_active = true`,
       [email]
@@ -43,6 +43,7 @@ module.exports = async (req, res) => {
             email: user.email,
             name: user.name,
             role: user.role,
+            tipo: user.tipo,
             bossId: user.boss_id,
             isActive: user.is_active,
             createdAt: user.created_at,

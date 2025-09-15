@@ -1,3 +1,17 @@
 {
-  "version": 2
+  "version": 2,
+  "functions": {
+    "api/users.js": {
+      "maxDuration": 30
+    },
+    "api/forms.js": {
+      "maxDuration": 30
+    },
+    "api/reports.js": {
+      "maxDuration": 30
+    },
+    "api/team.js": {
+      "maxDuration": 30
+    }
+  }
 }

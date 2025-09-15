@@ -65,17 +65,17 @@ module.exports = async (req, res) => {
       res.json(teamMembers);
 
     } else if (req.method === 'POST') {
-      const { email, password, name, role, bossId } = req.body;
+      const { email, password, name, role, tipo, bossId } = req.body;
       
-      console.log('Creating user with data:', { email, name, role, bossId });
+      console.log('Creating user with data:', { email, name, role, tipo, bossId });
 
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
       
       const [result] = await pool.execute(
-        `INSERT INTO users (email, password, name, role, boss_id, is_active, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, true, NOW(), NOW())`,
-        [email, hashedPassword, name, role, bossId || null]
+        `INSERT INTO users (email, password, name, role, tipo, boss_id, is_active, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, true, NOW(), NOW())`,
+        [email, hashedPassword, name, role, tipo || null, bossId || null]
       );
 
       res.json({
