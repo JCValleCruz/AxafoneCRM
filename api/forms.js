@@ -18,12 +18,15 @@ module.exports = async (req, res) => {
   try {
     if (req.method === 'POST') {
       const {
-        userId, jefeEquipoId, latitude, longitude, locationAddress,
+        userId, jefeEquipoId, latitude, longitude, locationAddress, direccionReal,
         cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
         telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
         numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
         ciberseguridad, registrosHorario, proveedorCorreo, licenciasOffice,
-        mantenimientoInformatico, numeroEmpleados
+        mantenimientoInformatico, numeroEmpleados,
+        // Campos específicos para FIDELIZACIÓN
+        sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento, disponeCloud,
+        disponeNegocioDigital, admiteLlamadaNps
       } = req.body;
 
       // Convertir valores vacíos a NULL o valores apropiados para la BD
@@ -33,6 +36,7 @@ module.exports = async (req, res) => {
         latitude,
         longitude,
         locationAddress,
+        direccionReal: direccionReal || null,
         cliente,
         cif,
         direccion,
@@ -55,29 +59,40 @@ module.exports = async (req, res) => {
         proveedorCorreo: proveedorCorreo || null,
         licenciasOffice: licenciasOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
-        numeroEmpleados
+        numeroEmpleados,
+        // Campos específicos para FIDELIZACIÓN
+        sedesNuevas: sedesNuevas || null,
+        numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
+        proveedorMantenimiento: proveedorMantenimiento || null,
+        disponeCloud: disponeCloud !== null && disponeCloud !== undefined ? (disponeCloud ? 'SI' : 'NO') : null,
+        disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital ? 'SI' : 'NO') : null,
+        admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps ? 'SI' : 'NO') : null
       };
 
       const [result] = await pool.execute(
         `INSERT INTO form_submissions (
-          user_id, jefe_equipo_id, submission_date, latitude, longitude, location_address,
+          user_id, jefe_equipo_id, submission_date, latitude, longitude, location_address, direccion_real,
           cliente, cif, direccion, persona_contacto, cargo_contacto, contacto_es_decisor,
           telefono_contacto, email_contacto, fin_permanencia, sedes_actuales, operador_actual,
           num_lineas_moviles, centralita, solo_voz, extensiones, m2m, fibras_actuales,
           ciberseguridad, registros_horario, proveedor_correo, licencias_office,
-          mantenimiento_informatico, numero_empleados, created_at, updated_at
-        ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          mantenimiento_informatico, numero_empleados,
+          sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento, dispone_cloud,
+          dispone_negocio_digital, admite_llamada_nps, created_at, updated_at
+        ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [
-          processedData.userId, processedData.jefeEquipoId, 
-          processedData.latitude, processedData.longitude, processedData.locationAddress,
-          processedData.cliente, processedData.cif, processedData.direccion, 
+          processedData.userId, processedData.jefeEquipoId,
+          processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
+          processedData.cliente, processedData.cif, processedData.direccion,
           processedData.personaContacto, processedData.cargoContacto, processedData.contactoEsDecisor,
-          processedData.telefonoContacto, processedData.emailContacto, processedData.finPermanencia, 
+          processedData.telefonoContacto, processedData.emailContacto, processedData.finPermanencia,
           processedData.sedesActuales, processedData.operadorActual,
-          processedData.numLineasMoviles, processedData.centralita, processedData.soloVoz, 
+          processedData.numLineasMoviles, processedData.centralita, processedData.soloVoz,
           processedData.extensiones, processedData.m2m, processedData.fibrasActuales,
-          processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorCorreo, 
-          processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados
+          processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorCorreo,
+          processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados,
+          processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
+          processedData.disponeCloud, processedData.disponeNegocioDigital, processedData.admiteLlamadaNps
         ]
       );
 
@@ -185,12 +200,15 @@ module.exports = async (req, res) => {
       }
 
       const {
-        latitude, longitude, locationAddress,
+        latitude, longitude, locationAddress, direccionReal,
         cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
         telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
         numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
         ciberseguridad, registrosHorario, proveedorCorreo, licenciasOffice,
-        mantenimientoInformatico, numeroEmpleados
+        mantenimientoInformatico, numeroEmpleados,
+        // Campos específicos para FIDELIZACIÓN
+        sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento, disponeCloud,
+        disponeNegocioDigital, admiteLlamadaNps
       } = req.body;
 
       // Procesar datos igual que en POST
@@ -198,6 +216,7 @@ module.exports = async (req, res) => {
         latitude,
         longitude,
         locationAddress,
+        direccionReal: direccionReal || null,
         cliente,
         cif,
         direccion,
@@ -220,21 +239,31 @@ module.exports = async (req, res) => {
         proveedorCorreo: proveedorCorreo || null,
         licenciasOffice: licenciasOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null,
-        numeroEmpleados
+        numeroEmpleados,
+        // Campos específicos para FIDELIZACIÓN
+        sedesNuevas: sedesNuevas || null,
+        numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
+        proveedorMantenimiento: proveedorMantenimiento || null,
+        disponeCloud: disponeCloud !== null && disponeCloud !== undefined ? (disponeCloud ? 'SI' : 'NO') : null,
+        disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital ? 'SI' : 'NO') : null,
+        admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps ? 'SI' : 'NO') : null
       };
 
       const [result] = await pool.execute(
-        `UPDATE form_submissions SET 
-          latitude = ?, longitude = ?, location_address = ?, cliente = ?, cif = ?, 
-          direccion = ?, persona_contacto = ?, cargo_contacto = ?, contacto_es_decisor = ?,
-          telefono_contacto = ?, email_contacto = ?, fin_permanencia = ?, sedes_actuales = ?, 
-          operador_actual = ?, num_lineas_moviles = ?, centralita = ?, solo_voz = ?, 
-          extensiones = ?, m2m = ?, fibras_actuales = ?, ciberseguridad = ?, 
-          registros_horario = ?, proveedor_correo = ?, licencias_office = ?, 
-          mantenimiento_informatico = ?, numero_empleados = ?, updated_at = NOW() 
+        `UPDATE form_submissions SET
+          latitude = ?, longitude = ?, location_address = ?, direccion_real = ?,
+          cliente = ?, cif = ?, direccion = ?, persona_contacto = ?, cargo_contacto = ?,
+          contacto_es_decisor = ?, telefono_contacto = ?, email_contacto = ?,
+          fin_permanencia = ?, sedes_actuales = ?, operador_actual = ?, num_lineas_moviles = ?,
+          centralita = ?, solo_voz = ?, extensiones = ?, m2m = ?, fibras_actuales = ?,
+          ciberseguridad = ?, registros_horario = ?, proveedor_correo = ?, licencias_office = ?,
+          mantenimiento_informatico = ?, numero_empleados = ?,
+          sedes_nuevas = ?, num_lineas_moviles_nuevas = ?, proveedor_mantenimiento = ?,
+          dispone_cloud = ?, dispone_negocio_digital = ?, admite_llamada_nps = ?,
+          updated_at = NOW()
          WHERE id = ?`,
         [
-          processedData.latitude, processedData.longitude, processedData.locationAddress,
+          processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
           processedData.cliente, processedData.cif, processedData.direccion,
           processedData.personaContacto, processedData.cargoContacto, processedData.contactoEsDecisor,
           processedData.telefonoContacto, processedData.emailContacto, processedData.finPermanencia,
@@ -242,7 +271,10 @@ module.exports = async (req, res) => {
           processedData.centralita, processedData.soloVoz, processedData.extensiones,
           processedData.m2m, processedData.fibrasActuales, processedData.ciberseguridad,
           processedData.registrosHorario, processedData.proveedorCorreo, processedData.licenciasOffice,
-          processedData.mantenimientoInformatico, processedData.numeroEmpleados, formId
+          processedData.mantenimientoInformatico, processedData.numeroEmpleados,
+          processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
+          processedData.disponeCloud, processedData.disponeNegocioDigital, processedData.admiteLlamadaNps,
+          formId
         ]
       );
 
