@@ -43,14 +43,14 @@ module.exports = async (req, res) => {
       }
 
     } else if (req.method === 'POST') {
-      const { email, password, name, role, tipo, bossId } = req.body;
+      const { email, password, name, role, tipo, boss_id } = req.body;
 
-      console.log('Creating user with data:', { email, password, name, role, tipo, bossId });
+      console.log('Creating user with data:', { email, password, name, role, tipo, boss_id });
 
       const [result] = await pool.execute(
         `INSERT INTO users (email, password, name, role, tipo, boss_id, is_active, created_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, true, NOW(), NOW())`,
-        [email, password, name, role, tipo || null, bossId || null]
+        [email, password, name, role, tipo || null, boss_id || null]
       );
 
       res.json({
