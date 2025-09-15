@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
         ciberseguridad, registrosHorario, proveedorCorreo, licenciasOffice,
         mantenimientoInformatico, numeroEmpleados,
         // Campos específicos para FIDELIZACIÓN
-        sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento, disponeCloud,
+        sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento,
         disponeNegocioDigital, admiteLlamadaNps
       } = req.body;
 
@@ -64,7 +64,6 @@ module.exports = async (req, res) => {
         sedesNuevas: sedesNuevas || null,
         numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
         proveedorMantenimiento: proveedorMantenimiento || null,
-        disponeCloud: disponeCloud !== null && disponeCloud !== undefined ? (disponeCloud ? 'SI' : 'NO') : null,
         disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital ? 'SI' : 'NO') : null,
         admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps ? 'SI' : 'NO') : null
       };
@@ -77,9 +76,9 @@ module.exports = async (req, res) => {
           num_lineas_moviles, centralita, solo_voz, extensiones, m2m, fibras_actuales,
           ciberseguridad, registros_horario, proveedor_correo, licencias_office,
           mantenimiento_informatico, numero_empleados,
-          sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento, dispone_cloud,
+          sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento,
           dispone_negocio_digital, admite_llamada_nps, created_at, updated_at
-        ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+        ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
         [
           processedData.userId, processedData.jefeEquipoId,
           processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
@@ -92,7 +91,7 @@ module.exports = async (req, res) => {
           processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorCorreo,
           processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados,
           processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
-          processedData.disponeCloud, processedData.disponeNegocioDigital, processedData.admiteLlamadaNps
+ processedData.disponeNegocioDigital, processedData.admiteLlamadaNps
         ]
       );
 
@@ -207,7 +206,7 @@ module.exports = async (req, res) => {
         ciberseguridad, registrosHorario, proveedorCorreo, licenciasOffice,
         mantenimientoInformatico, numeroEmpleados,
         // Campos específicos para FIDELIZACIÓN
-        sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento, disponeCloud,
+        sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento,
         disponeNegocioDigital, admiteLlamadaNps
       } = req.body;
 
@@ -244,7 +243,6 @@ module.exports = async (req, res) => {
         sedesNuevas: sedesNuevas || null,
         numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
         proveedorMantenimiento: proveedorMantenimiento || null,
-        disponeCloud: disponeCloud !== null && disponeCloud !== undefined ? (disponeCloud ? 'SI' : 'NO') : null,
         disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital ? 'SI' : 'NO') : null,
         admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps ? 'SI' : 'NO') : null
       };
@@ -259,7 +257,7 @@ module.exports = async (req, res) => {
           ciberseguridad = ?, registros_horario = ?, proveedor_correo = ?, licencias_office = ?,
           mantenimiento_informatico = ?, numero_empleados = ?,
           sedes_nuevas = ?, num_lineas_moviles_nuevas = ?, proveedor_mantenimiento = ?,
-          dispone_cloud = ?, dispone_negocio_digital = ?, admite_llamada_nps = ?,
+          dispone_negocio_digital = ?, admite_llamada_nps = ?,
           updated_at = NOW()
          WHERE id = ?`,
         [
@@ -273,7 +271,7 @@ module.exports = async (req, res) => {
           processedData.registrosHorario, processedData.proveedorCorreo, processedData.licenciasOffice,
           processedData.mantenimientoInformatico, processedData.numeroEmpleados,
           processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
-          processedData.disponeCloud, processedData.disponeNegocioDigital, processedData.admiteLlamadaNps,
+ processedData.disponeNegocioDigital, processedData.admiteLlamadaNps,
           formId
         ]
       );
