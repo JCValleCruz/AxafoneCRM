@@ -290,6 +290,6 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Forms error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', debug: error.message });
   }
 };
