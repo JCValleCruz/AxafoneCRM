@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     }
 
     const [rows] = await pool.execute(
-      `SELECT id, email, name, role, tipo, boss_id, is_active, created_at, updated_at, password as hashedPassword
+      `SELECT id, email, name, role, tipo, boss_id, is_active, created_at, updated_at, password
        FROM users 
        WHERE email = ? AND is_active = true`,
       [email]
@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
 
     if (rows.length > 0) {
       const user = rows[0];
-      const passwordMatch = await bcrypt.compare(password, user.hashedPassword);
+      const passwordMatch = await bcrypt.compare(password, user.password);
 
       if (passwordMatch) {
         res.json({

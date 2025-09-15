@@ -13,5 +13,8 @@
     "api/team.js": {
       "maxDuration": 30
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/users/(.*)", "destination": "/api/users.js" }
+  ]
 }

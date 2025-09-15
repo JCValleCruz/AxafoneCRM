@@ -97,7 +97,7 @@ module.exports = async (req, res) => {
       }
 
       const [rows] = await pool.execute(
-        `SELECT password as hashedPassword FROM users WHERE id = ?`,
+        `SELECT password FROM users WHERE id = ?`,
         [userId]
       );
 
@@ -106,7 +106,7 @@ module.exports = async (req, res) => {
       }
 
       const user = rows[0];
-      const passwordMatch = await bcrypt.compare(oldPassword, user.hashedPassword);
+      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
 
       if (!passwordMatch) {
         return res.status(401).json({ error: 'Invalid old password' });
