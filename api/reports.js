@@ -23,26 +23,24 @@ module.exports = async (req, res) => {
       let whereConditions = [];
       let queryParams = [];
 
-      // Always filter by jefe de equipo
-      if (jefeEquipoId) {
-        whereConditions.push('forms.jefe_equipo_id = ?');
-        queryParams.push(jefeEquipoId);
-      }
-
       // Filter by specific comercial if provided
       if (comercialId) {
-        whereConditions.push('forms.user_id = ?');
+        whereConditions.push('fs.user_id = ?');
         queryParams.push(comercialId);
+      } else if (jefeEquipoId) {
+        // If no specific comercial, filter by team members under this boss
+        whereConditions.push('users.boss_id = ?');
+        queryParams.push(jefeEquipoId);
       }
 
       // Filter by date range
       if (fechaInicio) {
-        whereConditions.push('DATE(forms.created_at) >= STR_TO_DATE(?, "%d/%m/%Y")');
+        whereConditions.push('DATE(fs.created_at) >= STR_TO_DATE(?, "%d/%m/%Y")');
         queryParams.push(fechaInicio);
       }
 
       if (fechaFin) {
-        whereConditions.push('DATE(forms.updated_at) <= STR_TO_DATE(?, "%d/%m/%Y")');
+        whereConditions.push('DATE(fs.updated_at) <= STR_TO_DATE(?, "%d/%m/%Y")');
         queryParams.push(fechaFin);
       }
 
@@ -52,39 +50,39 @@ module.exports = async (req, res) => {
 
       const sqlQuery = `
         SELECT
-          forms.id,
-          forms.cliente,
-          forms.cif,
-          forms.direccion,
-          forms.persona_contacto,
-          forms.cargo_contacto,
-          forms.contacto_es_decisor,
-          forms.telefono_contacto,
-          forms.email_contacto,
-          forms.fin_permanencia,
-          forms.sedes_actuales,
-          forms.operador_actual,
-          forms.num_lineas_moviles,
-          forms.centralita,
-          forms.solo_voz,
-          forms.extensiones,
-          forms.m2m,
-          forms.fibras_actuales,
-          forms.ciberseguridad,
-          forms.registros_horario,
-          forms.proveedor_correo,
-          forms.licencias_office,
-          forms.mantenimiento_informatico,
-          forms.numero_empleados,
-          forms.created_at,
-          forms.updated_at,
+          fs.id,
+          fs.cliente,
+          fs.cif,
+          fs.direccion,
+          fs.persona_contacto,
+          fs.cargo_contacto,
+          fs.contacto_es_decisor,
+          fs.telefono_contacto,
+          fs.email_contacto,
+          fs.fin_permanencia,
+          fs.sedes_actuales,
+          fs.operador_actual,
+          fs.num_lineas_moviles,
+          fs.centralita,
+          fs.solo_voz,
+          fs.extensiones,
+          fs.m2m,
+          fs.fibras_actuales,
+          fs.ciberseguridad,
+          fs.registros_horario,
+          fs.proveedor_correo,
+          fs.licencias_office,
+          fs.mantenimiento_informatico,
+          fs.numero_empleados,
+          fs.created_at,
+          fs.updated_at,
           users.name as comercial_name,
           users.email as comercial_email,
           users.tipo as comercial_tipo
-        FROM forms
-        LEFT JOIN users ON forms.user_id = users.id
+        FROM form_submissions fs
+        LEFT JOIN users ON fs.user_id = users.id
         ${whereClause}
-        ORDER BY forms.updated_at DESC
+        ORDER BY fs.updated_at DESC
       `;
 
       console.log('Reports query:', sqlQuery);
