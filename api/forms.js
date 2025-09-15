@@ -102,18 +102,38 @@ module.exports = async (req, res) => {
       });
 
     } else if (req.method === 'GET') {
-      const { cif, userId, requesterId } = parsedUrl.query;
-      
-      // Búsqueda por CIF
+      const { cif, search, userId, requesterId } = parsedUrl.query;
+
+      // Búsqueda por coincidencias parciales en CIF o nombre de cliente (sin autenticación)
+      if (search) {
+        const searchPattern = `%${search}%`;
+        const [rows] = await pool.execute(
+          `SELECT DISTINCT s.id, s.cif, s.cliente as razonSocial,
+                  s.telefono_contacto as telefono, s.email_contacto as email,
+                  u.name as comercial_name, boss.name as jefe_equipo_name
+           FROM form_submissions s
+           JOIN users u ON s.user_id = u.id
+           LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
+           WHERE s.cif LIKE ? OR s.cliente LIKE ?
+           ORDER BY s.submission_date DESC
+           LIMIT 10`,
+          [searchPattern, searchPattern]
+        );
+
+        res.json(rows);
+        return;
+      }
+
+      // Búsqueda por CIF exacto (sin autenticación)
       if (cif) {
         const [rows] = await pool.execute(
-          `SELECT s.*, u.name as comercial_name, u.email as comercial_email, 
+          `SELECT s.*, u.name as comercial_name, u.email as comercial_email,
                   boss.name as jefe_equipo_name
            FROM form_submissions s
            JOIN users u ON s.user_id = u.id
            LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
-           WHERE s.cif = ? 
-           ORDER BY s.submission_date DESC 
+           WHERE s.cif = ?
+           ORDER BY s.submission_date DESC
            LIMIT 1`,
           [cif]
         );
