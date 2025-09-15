@@ -78,7 +78,7 @@ module.exports = async (req, res) => {
           mantenimiento_informatico, numero_empleados,
           sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento,
           dispone_negocio_digital, admite_llamada_nps
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           processedData.userId, processedData.jefeEquipoId,
           processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
@@ -290,6 +290,6 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Forms error:', error);
-    res.status(500).json({ error: 'Internal server error', debug: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
