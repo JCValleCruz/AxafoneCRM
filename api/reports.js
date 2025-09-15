@@ -28,8 +28,8 @@ module.exports = async (req, res) => {
         whereConditions.push('fs.user_id = ?');
         queryParams.push(comercialId);
       } else if (jefeEquipoId) {
-        // If no specific comercial, filter by team members under this boss
-        whereConditions.push('users.boss_id = ?');
+        // If no specific comercial, filter by ALL team members under this boss
+        whereConditions.push('fs.user_id IN (SELECT id FROM users WHERE boss_id = ? AND is_active = 1)');
         queryParams.push(jefeEquipoId);
       }
 
