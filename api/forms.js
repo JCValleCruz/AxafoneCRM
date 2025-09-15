@@ -31,20 +31,20 @@ module.exports = async (req, res) => {
 
       // Convertir valores vacíos a NULL o valores apropiados para la BD
       const processedData = {
-        userId,
-        jefeEquipoId,
-        latitude,
-        longitude,
-        locationAddress,
+        userId: userId || null,
+        jefeEquipoId: jefeEquipoId || null,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        locationAddress: locationAddress || null,
         direccionReal: direccionReal || null,
-        cliente,
-        cif,
-        direccion,
-        personaContacto,
-        cargoContacto,
+        cliente: cliente || null,
+        cif: cif || null,
+        direccion: direccion || null,
+        personaContacto: personaContacto || null,
+        cargoContacto: cargoContacto || null,
         contactoEsDecisor: contactoEsDecisor ? 'SI' : 'NO', // boolean -> ENUM
-        telefonoContacto,
-        emailContacto,
+        telefonoContacto: telefonoContacto || null,
+        emailContacto: emailContacto || null,
         finPermanencia: finPermanencia || null, // string vacío -> NULL para date
         sedesActuales: sedesActuales || null,
         operadorActual: operadorActual || null,
@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
         proveedorCorreo: proveedorCorreo || null,
         licenciasOffice: licenciasOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
-        numeroEmpleados,
+        numeroEmpleados: numeroEmpleados || null,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas: sedesNuevas || null,
         numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
@@ -212,18 +212,18 @@ module.exports = async (req, res) => {
 
       // Procesar datos igual que en POST
       const processedData = {
-        latitude,
-        longitude,
-        locationAddress,
+        latitude: latitude || null,
+        longitude: longitude || null,
+        locationAddress: locationAddress || null,
         direccionReal: direccionReal || null,
-        cliente,
-        cif,
-        direccion,
-        personaContacto,
-        cargoContacto,
+        cliente: cliente || null,
+        cif: cif || null,
+        direccion: direccion || null,
+        personaContacto: personaContacto || null,
+        cargoContacto: cargoContacto || null,
         contactoEsDecisor: contactoEsDecisor ? 'SI' : 'NO',
-        telefonoContacto,
-        emailContacto,
+        telefonoContacto: telefonoContacto || null,
+        emailContacto: emailContacto || null,
         finPermanencia: finPermanencia || null,
         sedesActuales: sedesActuales || null,
         operadorActual: operadorActual || null,
@@ -238,7 +238,7 @@ module.exports = async (req, res) => {
         proveedorCorreo: proveedorCorreo || null,
         licenciasOffice: licenciasOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null,
-        numeroEmpleados,
+        numeroEmpleados: numeroEmpleados || null,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas: sedesNuevas || null,
         numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
@@ -290,6 +290,6 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('Forms error:', error);
-    res.status(500).json({ error: 'Internal server error', debug: error.message });
+    res.status(500).json({ error: 'Internal server error' });
   }
 };
