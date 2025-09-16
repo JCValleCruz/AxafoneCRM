@@ -61,10 +61,10 @@ module.exports = async (req, res) => {
         numLicenciasControlHorario: numLicenciasControlHorario ? parseInt(numLicenciasControlHorario) : null,
         fechaRenovacionControlHorario: fechaRenovacionControlHorario || null,
         proveedorCorreo: proveedorCorreo || null,
-        licenciasOffice: licenciasOffice ? parseInt(licenciasOffice) : null,
+        licenciasOffice: licenciasOffice || null,
         fechaRenovacionOffice: fechaRenovacionOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'SI' || mantenimientoInformatico === true || mantenimientoInformatico === 'true' ? 'SI' : 'NO') : null, // -> ENUM
-        numeroEmpleados: numeroEmpleados || null,
+        numeroEmpleados: numeroEmpleados ? parseInt(numeroEmpleados) : null,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas: sedesNuevas || null,
         numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
@@ -357,10 +357,10 @@ module.exports = async (req, res) => {
         licenciasRegistroHorario: licenciasRegistroHorario || null,
         fechaRenovacionControlHorario: fechaRenovacionControlHorario || null,
         proveedorCorreo: proveedorCorreo || null,
-        licenciasOffice: licenciasOffice ? parseInt(licenciasOffice) : null,
+        licenciasOffice: licenciasOffice || null,
         fechaRenovacionOffice: fechaRenovacionOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null,
-        numeroEmpleados: numeroEmpleados || null,
+        numeroEmpleados: numeroEmpleados ? parseInt(numeroEmpleados) : null,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas: sedesNuevas || null,
         numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
