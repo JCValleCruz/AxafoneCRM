@@ -125,9 +125,41 @@ module.exports = async (req, res) => {
         return;
       }
 
-      // Búsqueda por coincidencias parciales en CIF o nombre de cliente (sin autenticación)
+      // Búsqueda por coincidencias parciales en CIF o nombre de cliente
       if (search) {
         const searchPattern = `%${search}%`;
+
+        // Si hay requesterId, verificar el rol para determinar qué datos devolver
+        if (requesterId) {
+          const [requesterRows] = await pool.execute(
+            'SELECT id, role, boss_id FROM users WHERE id = ?',
+            [requesterId]
+          );
+
+          if (requesterRows.length > 0) {
+            const requester = requesterRows[0];
+
+            // Administradores y jefes de equipo ven los formularios completos
+            if (requester.role === 'ADMINISTRADOR' || requester.role === 'JEFE_EQUIPO') {
+              const [rows] = await pool.execute(
+                `SELECT s.*, u.name as comercial_name, u.email as comercial_email, u.tipo as comercial_tipo,
+                        boss.name as jefe_equipo_name, u.role as comercial_role
+                 FROM form_submissions s
+                 JOIN users u ON s.user_id = u.id
+                 LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
+                 WHERE s.cif LIKE ? OR s.cliente LIKE ?
+                 ORDER BY s.submission_date DESC
+                 LIMIT 10`,
+                [searchPattern, searchPattern]
+              );
+
+              res.json(rows);
+              return;
+            }
+          }
+        }
+
+        // Para usuarios sin autenticación o comerciales: solo información básica
         const [rows] = await pool.execute(
           `SELECT DISTINCT s.id, s.cif, s.cliente as razonSocial,
                   s.telefono_contacto as telefono, s.email_contacto as email,
@@ -145,8 +177,43 @@ module.exports = async (req, res) => {
         return;
       }
 
-      // Búsqueda por CIF exacto (sin autenticación)
+      // Búsqueda por CIF exacto
       if (cif) {
+        // Si hay requesterId, verificar el rol para determinar qué datos devolver
+        if (requesterId) {
+          const [requesterRows] = await pool.execute(
+            'SELECT id, role, boss_id FROM users WHERE id = ?',
+            [requesterId]
+          );
+
+          if (requesterRows.length > 0) {
+            const requester = requesterRows[0];
+
+            // Administradores y jefes de equipo ven los formularios completos
+            if (requester.role === 'ADMINISTRADOR' || requester.role === 'JEFE_EQUIPO') {
+              const [rows] = await pool.execute(
+                `SELECT s.*, u.name as comercial_name, u.email as comercial_email, u.tipo as comercial_tipo,
+                        boss.name as jefe_equipo_name, u.role as comercial_role
+                 FROM form_submissions s
+                 JOIN users u ON s.user_id = u.id
+                 LEFT JOIN users boss ON s.jefe_equipo_id = boss.id
+                 WHERE s.cif = ?
+                 ORDER BY s.submission_date DESC
+                 LIMIT 1`,
+                [cif]
+              );
+
+              if (rows.length > 0) {
+                res.json(rows[0]);
+              } else {
+                res.status(404).json({ error: 'No client found with this CIF' });
+              }
+              return;
+            }
+          }
+        }
+
+        // Para usuarios sin autenticación o comerciales: datos completos (manteniendo compatibilidad)
         const [rows] = await pool.execute(
           `SELECT s.*, u.name as comercial_name, u.email as comercial_email,
                   boss.name as jefe_equipo_name
