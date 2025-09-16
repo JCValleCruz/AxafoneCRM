@@ -299,10 +299,10 @@ module.exports = async (req, res) => {
       const [rows] = await pool.execute(query, params);
       res.json(rows);
     } else if (req.method === 'PUT') {
-      // Actualizar formulario existente
-      const formId = pathParts[0]; // ID del formulario en la URL
+      // Actualizar formulario existente (PUT /api/forms/{id})
+      const formId = pathParts.length === 3 && pathParts[0] === 'api' && pathParts[1] === 'forms' ? pathParts[2] : null;
       if (!formId) {
-        res.status(400).json({ error: 'Form ID required for update' });
+        res.status(400).json({ error: 'Form ID required for update. Use PUT /api/forms/{id}' });
         return;
       }
 
