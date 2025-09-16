@@ -12,6 +12,9 @@
     },
     "api/team.js": {
       "maxDuration": 30
+    },
+    "api/create-test-user.js": {
+      "maxDuration": 30
     }
   },
   "rewrites": [

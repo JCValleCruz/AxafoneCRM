@@ -1,4 +1,5 @@
 const pool = require('./db');
+const bcrypt = require('bcrypt');
 
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -33,10 +34,13 @@ module.exports = async (req, res) => {
     }
 
     // Crear el usuario de prueba
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash('pass123', saltRounds);
+
     const [result] = await pool.execute(
       `INSERT INTO users (email, password, name, role, is_active, created_at, updated_at)
        VALUES (?, ?, ?, ?, true, NOW(), NOW())`,
-      ['nchat@axafone.com', 'pass123', 'Nicolas Chat', 'ADMINISTRADOR']
+      ['nchat@axafone.com', hashedPassword, 'Nicolas Chat', 'ADMINISTRADOR']
     );
 
     res.json({
