@@ -22,8 +22,8 @@ module.exports = async (req, res) => {
         cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
         telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
         numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
-        ciberseguridad, registrosHorario, proveedorCorreo, licenciasOffice,
-        mantenimientoInformatico, numeroEmpleados,
+        ciberseguridad, registrosHorario, proveedorControlHorario, numLicenciasControlHorario,
+        proveedorCorreo, licenciasOffice, mantenimientoInformatico, numeroEmpleados,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento,
         disponeNegocioDigital, admiteLlamadaNps
@@ -56,6 +56,8 @@ module.exports = async (req, res) => {
         fibrasActuales: fibrasActuales || null,
         ciberseguridad: ciberseguridad || null,
         registrosHorario: registrosHorario ? (registrosHorario === 'true' || registrosHorario === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
+        proveedorControlHorario: proveedorControlHorario || null,
+        numLicenciasControlHorario: numLicenciasControlHorario ? parseInt(numLicenciasControlHorario) : null,
         proveedorCorreo: proveedorCorreo || null,
         licenciasOffice: licenciasOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
@@ -74,11 +76,11 @@ module.exports = async (req, res) => {
           cliente, cif, direccion, persona_contacto, cargo_contacto, contacto_es_decisor,
           telefono_contacto, email_contacto, fin_permanencia, sedes_actuales, operador_actual,
           num_lineas_moviles, centralita, solo_voz, extensiones, m2m, fibras_actuales,
-          ciberseguridad, registros_horario, proveedor_correo, licencias_office,
-          mantenimiento_informatico, numero_empleados,
+          ciberseguridad, registros_horario, proveedor_control_horario, num_licencias_control_horario,
+          proveedor_correo, licencias_office, mantenimiento_informatico, numero_empleados,
           sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento,
           dispone_negocio_digital, admite_llamada_nps
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           processedData.userId, processedData.jefeEquipoId,
           processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
@@ -88,8 +90,8 @@ module.exports = async (req, res) => {
           processedData.sedesActuales, processedData.operadorActual,
           processedData.numLineasMoviles, processedData.centralita, processedData.soloVoz,
           processedData.extensiones, processedData.m2m, processedData.fibrasActuales,
-          processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorCorreo,
-          processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados,
+          processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorControlHorario, processedData.numLicenciasControlHorario,
+          processedData.proveedorCorreo, processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados,
           processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
           processedData.disponeNegocioDigital, processedData.admiteLlamadaNps
         ]
@@ -311,8 +313,8 @@ module.exports = async (req, res) => {
         cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
         telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
         numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
-        ciberseguridad, registrosHorario, proveedorCorreo, licenciasOffice,
-        mantenimientoInformatico, numeroEmpleados,
+        ciberseguridad, registrosHorario, proveedorControlHorario, numLicenciasControlHorario,
+        proveedorCorreo, licenciasOffice, mantenimientoInformatico, numeroEmpleados,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento,
         disponeNegocioDigital, admiteLlamadaNps
@@ -343,6 +345,8 @@ module.exports = async (req, res) => {
         fibrasActuales: fibrasActuales || null,
         ciberseguridad: ciberseguridad || null,
         registrosHorario: registrosHorario ? (registrosHorario === 'true' || registrosHorario === 'SI' ? 'SI' : 'NO') : null,
+        proveedorControlHorario: proveedorControlHorario || null,
+        numLicenciasControlHorario: numLicenciasControlHorario ? parseInt(numLicenciasControlHorario) : null,
         proveedorCorreo: proveedorCorreo || null,
         licenciasOffice: licenciasOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null,
@@ -362,8 +366,8 @@ module.exports = async (req, res) => {
           contacto_es_decisor = ?, telefono_contacto = ?, email_contacto = ?,
           fin_permanencia = ?, sedes_actuales = ?, operador_actual = ?, num_lineas_moviles = ?,
           centralita = ?, solo_voz = ?, extensiones = ?, m2m = ?, fibras_actuales = ?,
-          ciberseguridad = ?, registros_horario = ?, proveedor_correo = ?, licencias_office = ?,
-          mantenimiento_informatico = ?, numero_empleados = ?,
+          ciberseguridad = ?, registros_horario = ?, proveedor_control_horario = ?, num_licencias_control_horario = ?,
+          proveedor_correo = ?, licencias_office = ?, mantenimiento_informatico = ?, numero_empleados = ?,
           sedes_nuevas = ?, num_lineas_moviles_nuevas = ?, proveedor_mantenimiento = ?,
           dispone_negocio_digital = ?, admite_llamada_nps = ?,
           updated_at = NOW()
@@ -376,8 +380,8 @@ module.exports = async (req, res) => {
           processedData.sedesActuales, processedData.operadorActual, processedData.numLineasMoviles,
           processedData.centralita, processedData.soloVoz, processedData.extensiones,
           processedData.m2m, processedData.fibrasActuales, processedData.ciberseguridad,
-          processedData.registrosHorario, processedData.proveedorCorreo, processedData.licenciasOffice,
-          processedData.mantenimientoInformatico, processedData.numeroEmpleados,
+          processedData.registrosHorario, processedData.proveedorControlHorario, processedData.numLicenciasControlHorario,
+          processedData.proveedorCorreo, processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados,
           processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
  processedData.disponeNegocioDigital, processedData.admiteLlamadaNps,
           formId
