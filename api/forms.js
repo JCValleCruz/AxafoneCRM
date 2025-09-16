@@ -42,32 +42,32 @@ module.exports = async (req, res) => {
         direccion: direccion,
         personaContacto: personaContacto,
         cargoContacto: cargoContacto,
-        contactoEsDecisor: contactoEsDecisor ? 'SI' : 'NO', // boolean -> ENUM
+        contactoEsDecisor: contactoEsDecisor === 'SI' || contactoEsDecisor === true ? 'SI' : 'NO', // string/boolean -> ENUM
         telefonoContacto: telefonoContacto,
         emailContacto: emailContacto,
         finPermanencia: finPermanencia || null, // string vacío -> NULL para date
         sedesActuales: sedesActuales || null,
         operadorActual: operadorActual || null,
         numLineasMoviles: numLineasMoviles ? parseInt(numLineasMoviles) : null, // string -> INT
-        centralita: centralita ? (centralita === 'true' || centralita === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
+        centralita: centralita ? (centralita === 'SI' || centralita === true || centralita === 'true' ? 'SI' : 'NO') : null, // -> ENUM
         soloVoz: soloVoz || null,
         extensiones: extensiones ? parseInt(extensiones) : null, // string -> INT
         m2m: m2m || null,
         fibrasActuales: fibrasActuales || null,
         ciberseguridad: ciberseguridad || null,
-        registrosHorario: registrosHorario ? (registrosHorario === 'true' || registrosHorario === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
+        registrosHorario: registrosHorario ? (registrosHorario === 'SI' || registrosHorario === true || registrosHorario === 'true' ? 'SI' : 'NO') : null, // -> ENUM
         proveedorControlHorario: proveedorControlHorario || null,
         numLicenciasControlHorario: numLicenciasControlHorario ? parseInt(numLicenciasControlHorario) : null,
         proveedorCorreo: proveedorCorreo || null,
         licenciasOffice: licenciasOffice || null,
-        mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null, // -> ENUM
+        mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'SI' || mantenimientoInformatico === true || mantenimientoInformatico === 'true' ? 'SI' : 'NO') : null, // -> ENUM
         numeroEmpleados: numeroEmpleados || null,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas: sedesNuevas || null,
         numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
         proveedorMantenimiento: proveedorMantenimiento || null,
-        disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital ? 'SI' : 'NO') : null,
-        admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps ? 'SI' : 'NO') : null
+        disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital === 'SI' || disponeNegocioDigital === true ? 'SI' : 'NO') : null,
+        admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps === 'SI' || admiteLlamadaNps === true ? 'SI' : 'NO') : null
       };
 
       const [result] = await pool.execute(
@@ -355,8 +355,8 @@ module.exports = async (req, res) => {
         sedesNuevas: sedesNuevas || null,
         numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
         proveedorMantenimiento: proveedorMantenimiento || null,
-        disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital ? 'SI' : 'NO') : null,
-        admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps ? 'SI' : 'NO') : null
+        disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital === 'SI' || disponeNegocioDigital === true ? 'SI' : 'NO') : null,
+        admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps === 'SI' || admiteLlamadaNps === true ? 'SI' : 'NO') : null
       };
 
       const [result] = await pool.execute(
