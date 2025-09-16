@@ -23,7 +23,8 @@ module.exports = async (req, res) => {
         telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
         numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
         ciberseguridad, registrosHorario, proveedorControlHorario, numLicenciasControlHorario,
-        proveedorCorreo, licenciasOffice, mantenimientoInformatico, numeroEmpleados,
+        licenciasRegistroHorario, fechaRenovacionControlHorario, proveedorCorreo, licenciasOffice, fechaRenovacionOffice,
+        mantenimientoInformatico, numeroEmpleados,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento,
         disponeNegocioDigital, admiteLlamadaNps
@@ -58,8 +59,10 @@ module.exports = async (req, res) => {
         registrosHorario: registrosHorario ? (registrosHorario === 'SI' || registrosHorario === true || registrosHorario === 'true' ? 'SI' : 'NO') : null, // -> ENUM
         proveedorControlHorario: proveedorControlHorario || null,
         numLicenciasControlHorario: numLicenciasControlHorario ? parseInt(numLicenciasControlHorario) : null,
+        fechaRenovacionControlHorario: fechaRenovacionControlHorario || null,
         proveedorCorreo: proveedorCorreo || null,
-        licenciasOffice: licenciasOffice || null,
+        licenciasOffice: licenciasOffice ? parseInt(licenciasOffice) : null,
+        fechaRenovacionOffice: fechaRenovacionOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'SI' || mantenimientoInformatico === true || mantenimientoInformatico === 'true' ? 'SI' : 'NO') : null, // -> ENUM
         numeroEmpleados: numeroEmpleados || null,
         // Campos específicos para FIDELIZACIÓN
@@ -77,10 +80,11 @@ module.exports = async (req, res) => {
           telefono_contacto, email_contacto, fin_permanencia, sedes_actuales, operador_actual,
           num_lineas_moviles, centralita, solo_voz, extensiones, m2m, fibras_actuales,
           ciberseguridad, registros_horario, proveedor_control_horario, num_licencias_control_horario,
-          proveedor_correo, licencias_office, mantenimiento_informatico, numero_empleados,
+          licencias_registro_horario, fecha_renovacion_control_horario, proveedor_correo, licencias_office, fecha_renovacion_office,
+          mantenimiento_informatico, numero_empleados,
           sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento,
-          dispone_negocio_digital, admite_llamada_nps
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          dispone_negocio_digital, admite_llamada_nps, last_man
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           processedData.userId, processedData.jefeEquipoId,
           processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
@@ -91,9 +95,10 @@ module.exports = async (req, res) => {
           processedData.numLineasMoviles, processedData.centralita, processedData.soloVoz,
           processedData.extensiones, processedData.m2m, processedData.fibrasActuales,
           processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorControlHorario, processedData.numLicenciasControlHorario,
-          processedData.proveedorCorreo, processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados,
+          processedData.fechaRenovacionControlHorario, processedData.proveedorCorreo, processedData.licenciasOffice, processedData.fechaRenovacionOffice,
+          processedData.mantenimientoInformatico, processedData.numeroEmpleados,
           processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
-          processedData.disponeNegocioDigital, processedData.admiteLlamadaNps
+          processedData.disponeNegocioDigital, processedData.admiteLlamadaNps, processedData.userId
         ]
       );
 
@@ -309,12 +314,13 @@ module.exports = async (req, res) => {
       }
 
       const {
-        latitude, longitude, locationAddress, direccionReal,
+        userId, latitude, longitude, locationAddress, direccionReal,
         cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
         telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
         numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
         ciberseguridad, registrosHorario, proveedorControlHorario, numLicenciasControlHorario,
-        proveedorCorreo, licenciasOffice, mantenimientoInformatico, numeroEmpleados,
+        licenciasRegistroHorario, fechaRenovacionControlHorario, proveedorCorreo, licenciasOffice, fechaRenovacionOffice,
+        mantenimientoInformatico, numeroEmpleados,
         // Campos específicos para FIDELIZACIÓN
         sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento,
         disponeNegocioDigital, admiteLlamadaNps
@@ -322,6 +328,7 @@ module.exports = async (req, res) => {
 
       // Procesar datos igual que en POST
       const processedData = {
+        userId: userId,
         latitude: latitude || null,
         longitude: longitude || null,
         locationAddress: locationAddress || null,
@@ -347,8 +354,11 @@ module.exports = async (req, res) => {
         registrosHorario: registrosHorario ? (registrosHorario === 'true' || registrosHorario === 'SI' ? 'SI' : 'NO') : null,
         proveedorControlHorario: proveedorControlHorario || null,
         numLicenciasControlHorario: numLicenciasControlHorario ? parseInt(numLicenciasControlHorario) : null,
+        licenciasRegistroHorario: licenciasRegistroHorario || null,
+        fechaRenovacionControlHorario: fechaRenovacionControlHorario || null,
         proveedorCorreo: proveedorCorreo || null,
-        licenciasOffice: licenciasOffice || null,
+        licenciasOffice: licenciasOffice ? parseInt(licenciasOffice) : null,
+        fechaRenovacionOffice: fechaRenovacionOffice || null,
         mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null,
         numeroEmpleados: numeroEmpleados || null,
         // Campos específicos para FIDELIZACIÓN
@@ -367,9 +377,10 @@ module.exports = async (req, res) => {
           fin_permanencia = ?, sedes_actuales = ?, operador_actual = ?, num_lineas_moviles = ?,
           centralita = ?, solo_voz = ?, extensiones = ?, m2m = ?, fibras_actuales = ?,
           ciberseguridad = ?, registros_horario = ?, proveedor_control_horario = ?, num_licencias_control_horario = ?,
-          proveedor_correo = ?, licencias_office = ?, mantenimiento_informatico = ?, numero_empleados = ?,
+          licencias_registro_horario = ?, fecha_renovacion_control_horario = ?, proveedor_correo = ?, licencias_office = ?, fecha_renovacion_office = ?,
+          mantenimiento_informatico = ?, numero_empleados = ?,
           sedes_nuevas = ?, num_lineas_moviles_nuevas = ?, proveedor_mantenimiento = ?,
-          dispone_negocio_digital = ?, admite_llamada_nps = ?,
+          dispone_negocio_digital = ?, admite_llamada_nps = ?, last_man = ?,
           updated_at = NOW()
          WHERE id = ?`,
         [
@@ -381,9 +392,10 @@ module.exports = async (req, res) => {
           processedData.centralita, processedData.soloVoz, processedData.extensiones,
           processedData.m2m, processedData.fibrasActuales, processedData.ciberseguridad,
           processedData.registrosHorario, processedData.proveedorControlHorario, processedData.numLicenciasControlHorario,
-          processedData.proveedorCorreo, processedData.licenciasOffice, processedData.mantenimientoInformatico, processedData.numeroEmpleados,
+          processedData.licenciasRegistroHorario, processedData.fechaRenovacionControlHorario, processedData.proveedorCorreo, processedData.licenciasOffice, processedData.fechaRenovacionOffice,
+          processedData.mantenimientoInformatico, processedData.numeroEmpleados,
           processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
- processedData.disponeNegocioDigital, processedData.admiteLlamadaNps,
+          processedData.disponeNegocioDigital, processedData.admiteLlamadaNps, processedData.userId,
           formId
         ]
       );
