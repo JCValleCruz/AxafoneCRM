@@ -95,7 +95,7 @@ module.exports = async (req, res) => {
           processedData.numLineasMoviles, processedData.centralita, processedData.soloVoz,
           processedData.extensiones, processedData.m2m, processedData.fibrasActuales,
           processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorControlHorario, processedData.numLicenciasControlHorario,
-          processedData.fechaRenovacionControlHorario, processedData.proveedorCorreo, processedData.licenciasOffice, processedData.fechaRenovacionOffice,
+          processedData.licenciasRegistroHorario, processedData.fechaRenovacionControlHorario, processedData.proveedorCorreo, processedData.licenciasOffice, processedData.fechaRenovacionOffice,
           processedData.mantenimientoInformatico, processedData.numeroEmpleados,
           processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
           processedData.disponeNegocioDigital, processedData.admiteLlamadaNps, processedData.userId
