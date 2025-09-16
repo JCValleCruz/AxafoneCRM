@@ -75,7 +75,7 @@ module.exports = async (req, res) => {
 
       const [result] = await pool.execute(
         `INSERT INTO form_submissions (
-          user_id, jefe_equipo_id, latitude, longitude, location_address, direccion_real,
+          user_id, jefe_equipo_id, submission_date, latitude, longitude, location_address, direccion_real,
           cliente, cif, direccion, persona_contacto, cargo_contacto, contacto_es_decisor,
           telefono_contacto, email_contacto, fin_permanencia, sedes_actuales, operador_actual,
           num_lineas_moviles, centralita, solo_voz, extensiones, m2m, fibras_actuales,
@@ -84,7 +84,7 @@ module.exports = async (req, res) => {
           mantenimiento_informatico, numero_empleados,
           sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento,
           dispone_negocio_digital, admite_llamada_nps, last_man
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           processedData.userId, processedData.jefeEquipoId,
           processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
