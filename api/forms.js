@@ -103,10 +103,10 @@ module.exports = async (req, res) => {
           num_lineas_moviles, centralita, solo_voz, extensiones, m2m, fibras_actuales,
           ciberseguridad, registros_horario, proveedor_control_horario, num_licencias_control_horario,
           licencias_registro_horario, fecha_renovacion_control_horario, proveedor_correo, licencias_office, fecha_renovacion_office,
-          mantenimiento_informatico, numero_empleados,
+          mantenimiento_informatico, numero_empleados, last_man,
           sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento,
-          dispone_negocio_digital, admite_llamada_nps, last_man
-        ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          dispone_negocio_digital, admite_llamada_nps
+        ) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           processedData.userId, processedData.jefeEquipoId,
           processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
@@ -118,9 +118,9 @@ module.exports = async (req, res) => {
           processedData.extensiones, processedData.m2m, processedData.fibrasActuales,
           processedData.ciberseguridad, processedData.registrosHorario, processedData.proveedorControlHorario, processedData.numLicenciasControlHorario,
           processedData.licenciasRegistroHorario, processedData.fechaRenovacionControlHorario, processedData.proveedorCorreo, processedData.licenciasOffice, processedData.fechaRenovacionOffice,
-          processedData.mantenimientoInformatico, processedData.numeroEmpleados,
+          processedData.mantenimientoInformatico, processedData.numeroEmpleados, processedData.userId,
           processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
-          processedData.disponeNegocioDigital, processedData.admiteLlamadaNps, processedData.userId
+          processedData.disponeNegocioDigital, processedData.admiteLlamadaNps
         ]
       );
 
