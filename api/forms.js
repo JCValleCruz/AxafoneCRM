@@ -17,61 +17,83 @@ module.exports = async (req, res) => {
 
   try {
     if (req.method === 'POST') {
+      console.log('=== INCOMING REQUEST BODY ===');
+      console.log('Full req.body:', JSON.stringify(req.body, null, 2));
+      console.log('Keys in req.body:', Object.keys(req.body));
+
       const {
-        userId, jefeEquipoId, latitude, longitude, locationAddress, direccionReal,
-        cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
-        telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
-        numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
-        ciberseguridad, registrosHorario, proveedorControlHorario, numLicenciasControlHorario,
-        licenciasRegistroHorario, fechaRenovacionControlHorario, proveedorCorreo, licenciasOffice, fechaRenovacionOffice,
-        mantenimientoInformatico, numeroEmpleados,
+        user_id, jefe_equipo_id, latitude, longitude, location_address, direccion_real,
+        cliente, cif, direccion, persona_contacto, cargo_contacto, contacto_es_decisor,
+        telefono_contacto, email_contacto, fin_permanencia, sedes_actuales, operador_actual,
+        num_lineas_moviles, centralita, solo_voz, extensiones, m2m, fibras_actuales,
+        ciberseguridad, registros_horario, proveedor_control_horario, num_licencias_control_horario,
+        licencias_registro_horario, fecha_renovacion_control_horario, proveedor_correo, licencias_office, fecha_renovacion_office,
+        mantenimiento_informatico, numero_empleados,
         // Campos específicos para FIDELIZACIÓN
-        sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento,
-        disponeNegocioDigital, admiteLlamadaNps
+        sedes_nuevas, num_lineas_moviles_nuevas, proveedor_mantenimiento,
+        dispone_negocio_digital, admite_llamada_nps
       } = req.body;
+
+      console.log('=== EXTRACTED VALUES ===');
+      console.log('user_id:', user_id);
+      console.log('jefe_equipo_id:', jefe_equipo_id);
+      console.log('cliente:', cliente);
+      console.log('cif:', cif);
 
       // Convertir valores vacíos a NULL o valores apropiados para la BD
       const processedData = {
-        userId: userId,
-        jefeEquipoId: jefeEquipoId,
+        userId: user_id,
+        jefeEquipoId: jefe_equipo_id,
         latitude: latitude || null,
         longitude: longitude || null,
-        locationAddress: locationAddress || null,
-        direccionReal: direccionReal || null,
+        locationAddress: location_address || null,
+        direccionReal: direccion_real || null,
         cliente: cliente,
         cif: cif,
         direccion: direccion,
-        personaContacto: personaContacto,
-        cargoContacto: cargoContacto,
-        contactoEsDecisor: contactoEsDecisor === 'SI' || contactoEsDecisor === true ? 'SI' : 'NO', // string/boolean -> ENUM
-        telefonoContacto: telefonoContacto,
-        emailContacto: emailContacto,
-        finPermanencia: finPermanencia || null, // string vacío -> NULL para date
-        sedesActuales: sedesActuales || null,
-        operadorActual: operadorActual || null,
-        numLineasMoviles: numLineasMoviles ? parseInt(numLineasMoviles) : null, // string -> INT
+        personaContacto: persona_contacto,
+        cargoContacto: cargo_contacto,
+        contactoEsDecisor: contacto_es_decisor === 'SI' || contacto_es_decisor === true ? 'SI' : 'NO', // string/boolean -> ENUM
+        telefonoContacto: telefono_contacto,
+        emailContacto: email_contacto,
+        finPermanencia: fin_permanencia || null, // string vacío -> NULL para date
+        sedesActuales: sedes_actuales || null,
+        operadorActual: operador_actual || null,
+        numLineasMoviles: num_lineas_moviles ? parseInt(num_lineas_moviles) : null, // string -> INT
         centralita: centralita ? (centralita === 'SI' || centralita === true || centralita === 'true' ? 'SI' : 'NO') : null, // -> ENUM
-        soloVoz: soloVoz || null,
+        soloVoz: solo_voz || null,
         extensiones: extensiones ? parseInt(extensiones) : null, // string -> INT
         m2m: m2m || null,
-        fibrasActuales: fibrasActuales || null,
+        fibrasActuales: fibras_actuales || null,
         ciberseguridad: ciberseguridad || null,
-        registrosHorario: registrosHorario ? (registrosHorario === 'SI' || registrosHorario === true || registrosHorario === 'true' ? 'SI' : 'NO') : null, // -> ENUM
-        proveedorControlHorario: proveedorControlHorario || null,
-        numLicenciasControlHorario: numLicenciasControlHorario ? parseInt(numLicenciasControlHorario) : null,
-        fechaRenovacionControlHorario: fechaRenovacionControlHorario || null,
-        proveedorCorreo: proveedorCorreo || null,
-        licenciasOffice: licenciasOffice || null,
-        fechaRenovacionOffice: fechaRenovacionOffice || null,
-        mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'SI' || mantenimientoInformatico === true || mantenimientoInformatico === 'true' ? 'SI' : 'NO') : null, // -> ENUM
-        numeroEmpleados: numeroEmpleados ? parseInt(numeroEmpleados) : null,
+        registrosHorario: registros_horario ? (registros_horario === 'SI' || registros_horario === true || registros_horario === 'true' ? 'SI' : 'NO') : null, // -> ENUM
+        proveedorControlHorario: proveedor_control_horario || null,
+        numLicenciasControlHorario: num_licencias_control_horario ? parseInt(num_licencias_control_horario) : null,
+        licenciasRegistroHorario: licencias_registro_horario || null,
+        fechaRenovacionControlHorario: fecha_renovacion_control_horario || null,
+        proveedorCorreo: proveedor_correo || null,
+        licenciasOffice: licencias_office || null,
+        fechaRenovacionOffice: fecha_renovacion_office || null,
+        mantenimientoInformatico: mantenimiento_informatico ? (mantenimiento_informatico === 'SI' || mantenimiento_informatico === true || mantenimiento_informatico === 'true' ? 'SI' : 'NO') : null, // -> ENUM
+        numeroEmpleados: numero_empleados ? parseInt(numero_empleados) : null,
         // Campos específicos para FIDELIZACIÓN
-        sedesNuevas: sedesNuevas || null,
-        numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
-        proveedorMantenimiento: proveedorMantenimiento || null,
-        disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital === 'SI' || disponeNegocioDigital === true ? 'SI' : 'NO') : null,
-        admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps === 'SI' || admiteLlamadaNps === true ? 'SI' : 'NO') : null
+        sedesNuevas: sedes_nuevas || null,
+        numLineasMovilesNuevas: num_lineas_moviles_nuevas ? parseInt(num_lineas_moviles_nuevas) : null,
+        proveedorMantenimiento: proveedor_mantenimiento || null,
+        disponeNegocioDigital: dispone_negocio_digital !== null && dispone_negocio_digital !== undefined ? (dispone_negocio_digital === 'SI' || dispone_negocio_digital === true ? 'SI' : 'NO') : null,
+        admiteLlamadaNps: admite_llamada_nps !== null && admite_llamada_nps !== undefined ? (admite_llamada_nps === 'SI' || admite_llamada_nps === true ? 'SI' : 'NO') : null
       };
+
+      console.log('=== PROCESSED DATA ===');
+      console.log('processedData keys:', Object.keys(processedData));
+      console.log('processedData sample:', {
+        userId: processedData.userId,
+        jefeEquipoId: processedData.jefeEquipoId,
+        cliente: processedData.cliente,
+        cif: processedData.cif
+      });
+
+      console.log('=== ATTEMPTING SQL INSERT ===');
 
       const [result] = await pool.execute(
         `INSERT INTO form_submissions (
@@ -101,6 +123,10 @@ module.exports = async (req, res) => {
           processedData.disponeNegocioDigital, processedData.admiteLlamadaNps, processedData.userId
         ]
       );
+
+      console.log('=== SQL INSERT SUCCESS ===');
+      console.log('Result:', result);
+      console.log('InsertId:', result.insertId);
 
       res.json({
         success: true,
@@ -413,7 +439,14 @@ module.exports = async (req, res) => {
     }
 
   } catch (error) {
-    console.error('Forms error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('=== FORMS ERROR ===');
+    console.error('Error type:', error.constructor.name);
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Error code:', error.code);
+    console.error('Error errno:', error.errno);
+    console.error('Error sqlState:', error.sqlState);
+    console.error('Error sqlMessage:', error.sqlMessage);
+    res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 };
