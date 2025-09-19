@@ -463,36 +463,71 @@ module.exports = async (req, res) => {
         admiteLlamadaNps: (admiteLlamadaNps !== null && admiteLlamadaNps !== undefined) || (admite_llamada_nps !== null && admite_llamada_nps !== undefined) ? ((admiteLlamadaNps || admite_llamada_nps) === 'SI' || (admiteLlamadaNps || admite_llamada_nps) === true ? 'SI' : 'NO') : null
       };
 
-      const [result] = await pool.execute(
-        `UPDATE form_submissions SET
-          latitude = ?, longitude = ?, location_address = ?, direccion_real = ?,
-          cliente = ?, cif = ?, direccion = ?, persona_contacto = ?, cargo_contacto = ?,
-          contacto_es_decisor = ?, telefono_contacto = ?, email_contacto = ?,
-          fin_permanencia = ?, sedes_actuales = ?, operador_actual = ?, num_lineas_moviles = ?,
-          centralita = ?, solo_voz = ?, extensiones = ?, m2m = ?, fibras_actuales = ?,
-          ciberseguridad = ?, registros_horario = ?, proveedor_control_horario = ?, num_licencias_control_horario = ?,
-          licencias_registro_horario = ?, fecha_renovacion_control_horario = ?, proveedor_correo = ?, licencias_office = ?, fecha_renovacion_office = ?,
-          mantenimiento_informatico = ?, numero_empleados = ?,
-          sedes_nuevas = ?, num_lineas_moviles_nuevas = ?, proveedor_mantenimiento = ?,
-          dispone_negocio_digital = ?, admite_llamada_nps = ?, last_man = ?,
-          updated_at = NOW()
-         WHERE id = ?`,
-        [
-          processedData.latitude, processedData.longitude, processedData.locationAddress, processedData.direccionReal,
-          processedData.cliente, processedData.cif, processedData.direccion,
-          processedData.personaContacto, processedData.cargoContacto, processedData.contactoEsDecisor,
-          processedData.telefonoContacto, processedData.emailContacto, processedData.finPermanencia,
-          processedData.sedesActuales, processedData.operadorActual, processedData.numLineasMoviles,
-          processedData.centralita, processedData.soloVoz, processedData.extensiones,
-          processedData.m2m, processedData.fibrasActuales, processedData.ciberseguridad,
-          processedData.registrosHorario, processedData.proveedorControlHorario, processedData.numLicenciasControlHorario,
-          processedData.licenciasRegistroHorario, processedData.fechaRenovacionControlHorario, processedData.proveedorCorreo, processedData.licenciasOffice, processedData.fechaRenovacionOffice,
-          processedData.mantenimientoInformatico, processedData.numeroEmpleados,
-          processedData.sedesNuevas, processedData.numLineasMovilesNuevas, processedData.proveedorMantenimiento,
-          processedData.disponeNegocioDigital, processedData.admiteLlamadaNps, processedData.userId,
-          formId
-        ]
-      );
+      // Construir UPDATE dinámico solo con campos que no son undefined
+      const updateFields = [];
+      const updateValues = [];
+
+      // Mapeo de campos processedData -> nombres de columna en DB
+      const fieldMapping = {
+        'latitude': 'latitude',
+        'longitude': 'longitude',
+        'locationAddress': 'location_address',
+        'direccionReal': 'direccion_real',
+        'cliente': 'cliente',
+        'cif': 'cif',
+        'direccion': 'direccion',
+        'personaContacto': 'persona_contacto',
+        'cargoContacto': 'cargo_contacto',
+        'contactoEsDecisor': 'contacto_es_decisor',
+        'telefonoContacto': 'telefono_contacto',
+        'emailContacto': 'email_contacto',
+        'finPermanencia': 'fin_permanencia',
+        'sedesActuales': 'sedes_actuales',
+        'operadorActual': 'operador_actual',
+        'numLineasMoviles': 'num_lineas_moviles',
+        'centralita': 'centralita',
+        'soloVoz': 'solo_voz',
+        'extensiones': 'extensiones',
+        'm2m': 'm2m',
+        'fibrasActuales': 'fibras_actuales',
+        'ciberseguridad': 'ciberseguridad',
+        'registrosHorario': 'registros_horario',
+        'proveedorControlHorario': 'proveedor_control_horario',
+        'numLicenciasControlHorario': 'num_licencias_control_horario',
+        'licenciasRegistroHorario': 'licencias_registro_horario',
+        'fechaRenovacionControlHorario': 'fecha_renovacion_control_horario',
+        'proveedorCorreo': 'proveedor_correo',
+        'licenciasOffice': 'licencias_office',
+        'fechaRenovacionOffice': 'fecha_renovacion_office',
+        'mantenimientoInformatico': 'mantenimiento_informatico',
+        'numeroEmpleados': 'numero_empleados',
+        'sedesNuevas': 'sedes_nuevas',
+        'numLineasMovilesNuevas': 'num_lineas_moviles_nuevas',
+        'proveedorMantenimiento': 'proveedor_mantenimiento',
+        'disponeNegocioDigital': 'dispone_negocio_digital',
+        'admiteLlamadaNps': 'admite_llamada_nps',
+        'userId': 'last_man'
+      };
+
+      // Solo agregar campos que no son undefined
+      for (const [processedField, dbColumn] of Object.entries(fieldMapping)) {
+        if (processedData[processedField] !== undefined) {
+          updateFields.push(`${dbColumn} = ?`);
+          updateValues.push(processedData[processedField]);
+        }
+      }
+
+      // Siempre actualizar updated_at
+      updateFields.push('updated_at = NOW()');
+
+      // Construir la consulta SQL
+      const updateQuery = `UPDATE form_submissions SET ${updateFields.join(', ')} WHERE id = ?`;
+      updateValues.push(formId);
+
+      console.log('UPDATE Query:', updateQuery);
+      console.log('UPDATE Values:', updateValues);
+
+      const [result] = await pool.execute(updateQuery, updateValues);
 
       if (result.affectedRows > 0) {
         res.json({
