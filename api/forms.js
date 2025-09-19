@@ -40,6 +40,40 @@ module.exports = async (req, res) => {
       console.log('cliente:', cliente);
       console.log('cif:', cif);
 
+      // Validaciones de campos obligatorios
+      const requiredFields = {
+        'cliente': cliente,
+        'cif': cif,
+        'direccion': direccion,
+        'persona_contacto': persona_contacto,
+        'cargo_contacto': cargo_contacto,
+        'telefono_contacto': telefono_contacto,
+        'email_contacto': email_contacto
+      };
+
+      // Validar localización obligatoria
+      if (!latitude || !longitude) {
+        return res.status(400).json({
+          error: 'La localización es obligatoria. Active los servicios de localización de su dispositivo.'
+        });
+      }
+
+      // Buscar el primer campo obligatorio que esté vacío
+      for (const [fieldName, value] of Object.entries(requiredFields)) {
+        if (!value || value.toString().trim() === '') {
+          const fieldMessages = {
+            'cliente': 'Falta el nombre de la empresa',
+            'cif': 'Falta el CIF de la empresa',
+            'direccion': 'Falta la dirección de la empresa',
+            'persona_contacto': 'Falta el nombre de la persona de contacto',
+            'cargo_contacto': 'Falta el cargo de la persona de contacto',
+            'telefono_contacto': 'Falta el teléfono de contacto',
+            'email_contacto': 'Falta el email de contacto'
+          };
+          return res.status(400).json({ error: fieldMessages[fieldName] });
+        }
+      }
+
       // Convertir valores vacíos a NULL o valores apropiados para la BD
       const processedData = {
         userId: user_id,
@@ -340,59 +374,93 @@ module.exports = async (req, res) => {
       }
 
       const {
-        userId, latitude, longitude, locationAddress, direccionReal,
-        cliente, cif, direccion, personaContacto, cargoContacto, contactoEsDecisor,
-        telefonoContacto, emailContacto, finPermanencia, sedesActuales, operadorActual,
-        numLineasMoviles, centralita, soloVoz, extensiones, m2m, fibrasActuales,
-        ciberseguridad, registrosHorario, proveedorControlHorario, numLicenciasControlHorario,
-        licenciasRegistroHorario, fechaRenovacionControlHorario, proveedorCorreo, licenciasOffice, fechaRenovacionOffice,
-        mantenimientoInformatico, numeroEmpleados,
+        // Aceptar tanto camelCase como snake_case para compatibilidad
+        userId, user_id, latitude, longitude, locationAddress, location_address, direccionReal, direccion_real,
+        cliente, cif, direccion, personaContacto, persona_contacto, cargoContacto, cargo_contacto,
+        contactoEsDecisor, contacto_es_decisor, telefonoContacto, telefono_contacto, emailContacto, email_contacto,
+        finPermanencia, fin_permanencia, sedesActuales, sedes_actuales, operadorActual, operador_actual,
+        numLineasMoviles, num_lineas_moviles, centralita, soloVoz, solo_voz, extensiones, m2m,
+        fibrasActuales, fibras_actuales, ciberseguridad, registrosHorario, registros_horario,
+        proveedorControlHorario, proveedor_control_horario, numLicenciasControlHorario, num_licencias_control_horario,
+        licenciasRegistroHorario, licencias_registro_horario, fechaRenovacionControlHorario, fecha_renovacion_control_horario,
+        proveedorCorreo, proveedor_correo, licenciasOffice, licencias_office, fechaRenovacionOffice, fecha_renovacion_office,
+        mantenimientoInformatico, mantenimiento_informatico, numeroEmpleados, numero_empleados,
         // Campos específicos para FIDELIZACIÓN
-        sedesNuevas, numLineasMovilesNuevas, proveedorMantenimiento,
-        disponeNegocioDigital, admiteLlamadaNps
+        sedesNuevas, sedes_nuevas, numLineasMovilesNuevas, num_lineas_moviles_nuevas,
+        proveedorMantenimiento, proveedor_mantenimiento,
+        disponeNegocioDigital, dispone_negocio_digital, admiteLlamadaNps, admite_llamada_nps
       } = req.body;
 
-      // Procesar datos igual que en POST
+      // Validaciones de campos obligatorios (igual que en POST)
+      const requiredFields = {
+        'cliente': cliente,
+        'cif': cif,
+        'direccion': direccion,
+        'personaContacto': personaContacto || persona_contacto,
+        'cargoContacto': cargoContacto || cargo_contacto,
+        'telefonoContacto': telefonoContacto || telefono_contacto,
+        'emailContacto': emailContacto || email_contacto
+      };
+
+      // Para ediciones (PUT) no validamos localización, se mantiene la existente
+
+      // Buscar el primer campo obligatorio que esté vacío
+      for (const [fieldName, value] of Object.entries(requiredFields)) {
+        if (!value || value.toString().trim() === '') {
+          const fieldMessages = {
+            'cliente': 'Falta el nombre de la empresa',
+            'cif': 'Falta el CIF de la empresa',
+            'direccion': 'Falta la dirección de la empresa',
+            'personaContacto': 'Falta el nombre de la persona de contacto',
+            'cargoContacto': 'Falta el cargo de la persona de contacto',
+            'telefonoContacto': 'Falta el teléfono de contacto',
+            'emailContacto': 'Falta el email de contacto'
+          };
+          return res.status(400).json({ error: fieldMessages[fieldName] });
+        }
+      }
+
+      // Procesar datos igual que en POST (aceptar ambos formatos)
       const processedData = {
-        userId: userId,
+        userId: userId || user_id,
         latitude: latitude || null,
         longitude: longitude || null,
-        locationAddress: locationAddress || null,
-        direccionReal: direccionReal || null,
+        locationAddress: locationAddress || location_address || null,
+        direccionReal: direccionReal || direccion_real || null,
         cliente: cliente,
         cif: cif,
         direccion: direccion,
-        personaContacto: personaContacto,
-        cargoContacto: cargoContacto,
-        contactoEsDecisor: contactoEsDecisor ? 'SI' : 'NO',
-        telefonoContacto: telefonoContacto,
-        emailContacto: emailContacto,
-        finPermanencia: finPermanencia || null,
-        sedesActuales: sedesActuales || null,
-        operadorActual: operadorActual || null,
-        numLineasMoviles: numLineasMoviles ? parseInt(numLineasMoviles) : null,
-        centralita: centralita ? (centralita === 'true' || centralita === 'SI' ? 'SI' : 'NO') : null,
-        soloVoz: soloVoz || null,
+        personaContacto: personaContacto || persona_contacto,
+        cargoContacto: cargoContacto || cargo_contacto,
+        contactoEsDecisor: (contactoEsDecisor || contacto_es_decisor) ? 'SI' : 'NO',
+        telefonoContacto: telefonoContacto || telefono_contacto,
+        emailContacto: emailContacto || email_contacto,
+        finPermanencia: finPermanencia || fin_permanencia || null,
+        sedesActuales: sedesActuales || sedes_actuales || null,
+        operadorActual: operadorActual || operador_actual || null,
+        numLineasMoviles: (numLineasMoviles || num_lineas_moviles) ? parseInt(numLineasMoviles || num_lineas_moviles) : null,
+        centralita: (centralita) ? (centralita === 'true' || centralita === 'SI' ? 'SI' : 'NO') : null,
+        soloVoz: soloVoz || solo_voz || null,
         extensiones: extensiones ? parseInt(extensiones) : null,
         m2m: m2m || null,
-        fibrasActuales: fibrasActuales || null,
+        fibrasActuales: fibrasActuales || fibras_actuales || null,
         ciberseguridad: ciberseguridad || null,
-        registrosHorario: registrosHorario ? (registrosHorario === 'true' || registrosHorario === 'SI' ? 'SI' : 'NO') : null,
-        proveedorControlHorario: proveedorControlHorario || null,
-        numLicenciasControlHorario: numLicenciasControlHorario ? parseInt(numLicenciasControlHorario) : null,
-        licenciasRegistroHorario: licenciasRegistroHorario || null,
-        fechaRenovacionControlHorario: fechaRenovacionControlHorario || null,
-        proveedorCorreo: proveedorCorreo || null,
-        licenciasOffice: licenciasOffice || null,
-        fechaRenovacionOffice: fechaRenovacionOffice || null,
-        mantenimientoInformatico: mantenimientoInformatico ? (mantenimientoInformatico === 'true' || mantenimientoInformatico === 'SI' ? 'SI' : 'NO') : null,
-        numeroEmpleados: numeroEmpleados ? parseInt(numeroEmpleados) : null,
+        registrosHorario: (registrosHorario || registros_horario) ? ((registrosHorario || registros_horario) === 'true' || (registrosHorario || registros_horario) === 'SI' ? 'SI' : 'NO') : null,
+        proveedorControlHorario: proveedorControlHorario || proveedor_control_horario || null,
+        numLicenciasControlHorario: (numLicenciasControlHorario || num_licencias_control_horario) ? parseInt(numLicenciasControlHorario || num_licencias_control_horario) : null,
+        licenciasRegistroHorario: licenciasRegistroHorario || licencias_registro_horario || null,
+        fechaRenovacionControlHorario: fechaRenovacionControlHorario || fecha_renovacion_control_horario || null,
+        proveedorCorreo: proveedorCorreo || proveedor_correo || null,
+        licenciasOffice: licenciasOffice || licencias_office || null,
+        fechaRenovacionOffice: fechaRenovacionOffice || fecha_renovacion_office || null,
+        mantenimientoInformatico: (mantenimientoInformatico || mantenimiento_informatico) ? ((mantenimientoInformatico || mantenimiento_informatico) === 'true' || (mantenimientoInformatico || mantenimiento_informatico) === 'SI' ? 'SI' : 'NO') : null,
+        numeroEmpleados: (numeroEmpleados || numero_empleados) ? parseInt(numeroEmpleados || numero_empleados) : null,
         // Campos específicos para FIDELIZACIÓN
-        sedesNuevas: sedesNuevas || null,
-        numLineasMovilesNuevas: numLineasMovilesNuevas ? parseInt(numLineasMovilesNuevas) : null,
-        proveedorMantenimiento: proveedorMantenimiento || null,
-        disponeNegocioDigital: disponeNegocioDigital !== null && disponeNegocioDigital !== undefined ? (disponeNegocioDigital === 'SI' || disponeNegocioDigital === true ? 'SI' : 'NO') : null,
-        admiteLlamadaNps: admiteLlamadaNps !== null && admiteLlamadaNps !== undefined ? (admiteLlamadaNps === 'SI' || admiteLlamadaNps === true ? 'SI' : 'NO') : null
+        sedesNuevas: sedesNuevas || sedes_nuevas || null,
+        numLineasMovilesNuevas: (numLineasMovilesNuevas || num_lineas_moviles_nuevas) ? parseInt(numLineasMovilesNuevas || num_lineas_moviles_nuevas) : null,
+        proveedorMantenimiento: proveedorMantenimiento || proveedor_mantenimiento || null,
+        disponeNegocioDigital: (disponeNegocioDigital !== null && disponeNegocioDigital !== undefined) || (dispone_negocio_digital !== null && dispone_negocio_digital !== undefined) ? ((disponeNegocioDigital || dispone_negocio_digital) === 'SI' || (disponeNegocioDigital || dispone_negocio_digital) === true ? 'SI' : 'NO') : null,
+        admiteLlamadaNps: (admiteLlamadaNps !== null && admiteLlamadaNps !== undefined) || (admite_llamada_nps !== null && admite_llamada_nps !== undefined) ? ((admiteLlamadaNps || admite_llamada_nps) === 'SI' || (admiteLlamadaNps || admite_llamada_nps) === true ? 'SI' : 'NO') : null
       };
 
       const [result] = await pool.execute(
